@@ -1,0 +1,5 @@
+include(LemonTraceL)
+include(LemonParseArguments)
+
+function(lemon_find_package NAME)
+endfunction()

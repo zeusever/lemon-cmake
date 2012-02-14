@@ -1,0 +1,39 @@
+/* 
+ * below codes is used by cmake lemon lua extension functions 
+ * do't modify it by hand.
+ */
+
+#ifndef EXTERN_C
+#	ifdef __cplusplus
+#		define EXTERN_C    extern "C" 
+#	else
+#		define EXTERN_C    extern
+#	endif
+#endif
+
+#ifdef WIN32
+#	define ${PROJECT_PREFIX}_EXPORT 	__declspec(dllexport) 
+#	define ${PROJECT_PREFIX}_IMPORT 	__declspec(dllimport) 
+#	define ${PROJECT_PREFIX}_PRIVATE
+#else
+#	define ${PROJECT_PREFIX}_EXPORT 	__attribute__ ((visibility ("default")))
+#	define ${PROJECT_PREFIX}_IMPORT		__attribute__ ((visibility ("default")))
+#	define ${PROJECT_PREFIX}_PRIVATE	__attribute__ ((visibility ("hidden")))
+#endif //WIN32
+
+#ifdef ${PROJECT_PREFIX}_BUILD_AS_DLL
+
+#ifdef ${PROJECT_PREFIX}_BUILD
+#	define ${PROJECT_PREFIX}_API 	EXTERN_C ${PROJECT_PREFIX}_EXPORT
+#	define ${PROJECT_PREFIX}_CLASS 	${PROJECT_PREFIX}_EXPORT
+#else
+#	define ${PROJECT_PREFIX}_API 	EXTERN_C ${PROJECT_PREFIX}_IMPORT
+#	define ${PROJECT_PREFIX}_CLASS 	${PROJECT_PREFIX}_IMPORT
+#endif //${PROJECT_PREFIX}_BUILD
+
+#else
+
+#	define ${PROJECT_PREFIX}_API 	EXTERN_C 
+#	define ${PROJECT_PREFIX}_CLASS 	
+
+#endif //${PROJECT_PREFIX}_BUILD_AS_DLL
