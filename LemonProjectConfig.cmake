@@ -44,7 +44,7 @@ function(lemon_target_flags NAME)
       add_definitions(/D_WIN32_WINNT=0x0601 /D_WIN32_WINDOWS=0x0601 /DNTDDI_VERSION=NTDDI_WIN7 /D_WIN32_IE=0x0800)
     endif()
 
-    add_definitions(/D${PREFIX}_BUILD /WX /W4)
+    add_definitions(/D${PREFIX}_BUILD /WX /W4 /D_UNICODE /DUNICODE)
   else()
     add_definitions(-D${PREFIX}_BUILD)
   endif()

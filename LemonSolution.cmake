@@ -24,8 +24,9 @@ function(lemon_solution NAME)
   lemon_scan_project("libraries" ${PROJECT_SOURCE_DIR}/sources)
   
   # scan the tools directory
-  include_directories(${PROJECT_SOURCE_DIR} ${LEMON_BUILD_TARGET_DIR})
+  include_directories(${PROJECT_SOURCE_DIR}/thirdpart ${LEMON_BUILD_TARGET_DIR}/thirdpart)  
   lemon_scan_project("thirdpart" ${PROJECT_SOURCE_DIR}/thirdpart)
+  include_directories(${PROJECT_SOURCE_DIR} ${LEMON_BUILD_TARGET_DIR})
   lemon_scan_project("tools" ${PROJECT_SOURCE_DIR}/tools PREFIX tools)
   lemon_scan_project("unittest" ${PROJECT_SOURCE_DIR}/unittest PREFIX unittest)
 endfunction()
@@ -84,7 +85,7 @@ function(lemon_project NAME)
     lemon_project
     PROJECT 
     LEMON_OPTION_ARGS SHARED STATIC EXE
-    LEMON_ONE_VALUE_KEY VERSION
+    LEMON_ONE_VALUE_KEY VERSION  RENAME
     LEMON_INPUT_ARGS ${ARGN})
 
   if(NOT PROJECT_VERSION)
@@ -111,7 +112,7 @@ function(lemon_project NAME)
   elseif(PROJECT_STATIC)
     add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   else()
-    add_executable(${NAME} ${FILES} ${INFO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES})
   endif()
 
   if(LEMON_PROJECT_LIBS)
@@ -119,6 +120,10 @@ function(lemon_project NAME)
   endif()
 
   lemon_set_project_output_dir(${NAME})
+  
+  if(PROJECT_RENAME)
+	set_target_properties(${NAME} PROPERTIES OUTPUT_NAME ${PROJECT_RENAME})
+  endif()
 
 endfunction()
 
@@ -145,6 +150,10 @@ endfunction()
 #################################################################################
 function(lemon_exe_project NAME)
   lemon_project(${NAME} EXE ${ARGN})
+endfunction()
+
+function(lemon_win32_project NAME)
+  lemon_project(${NAME} WIN32 ${ARGN})
 endfunction()
 
 function(lemon_unittest_project NAME)
