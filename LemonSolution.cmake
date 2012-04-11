@@ -18,14 +18,16 @@ function(lemon_solution NAME)
   endif()
 
   set(LEMON_SOLUTION_VERSION ${LEMON_SOLUTION_VERSION} CACHE STRING "the versions tring")
+  
+  # scan the tools directory
+  include_directories(${PROJECT_SOURCE_DIR}/thirdpart ${LEMON_BUILD_TARGET_DIR}/thirdpart)  
+  lemon_scan_project("thirdpart" ${PROJECT_SOURCE_DIR}/thirdpart)
 
   # scan the sources directory
   include_directories(${PROJECT_SOURCE_DIR}/sources ${LEMON_BUILD_TARGET_DIR}/sources)
   lemon_scan_project("libraries" ${PROJECT_SOURCE_DIR}/sources)
   
-  # scan the tools directory
-  include_directories(${PROJECT_SOURCE_DIR}/thirdpart ${LEMON_BUILD_TARGET_DIR}/thirdpart)  
-  lemon_scan_project("thirdpart" ${PROJECT_SOURCE_DIR}/thirdpart)
+  
   include_directories(${PROJECT_SOURCE_DIR} ${LEMON_BUILD_TARGET_DIR})
   lemon_scan_project("tools" ${PROJECT_SOURCE_DIR}/tools PREFIX tools)
   lemon_scan_project("unittest" ${PROJECT_SOURCE_DIR}/unittest PREFIX unittest)
