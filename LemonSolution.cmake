@@ -98,8 +98,12 @@ function(lemon_project NAME)
   else()
     lemon_project_config(FILES ${NAME})
   endif()
-
-  lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
+  if(NOT PROJECT_STATIC AND WIN32)
+	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
+  else()
+	
+	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
+  endif()
 
   if(LEMON_PROJECT_INCLUDES)
     include_directories(${LEMON_PROJECT_INCLUDES})

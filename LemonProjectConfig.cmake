@@ -57,6 +57,7 @@ function(lemon_project_info FILES NAME VERSION)
   lemon_parse_arguments(
     lemon_project_info
     PROJECT
+	LEMON_OPTION_ARGS BUILD_RC
     LEMON_ONE_VALUE_KEY PATH
     LEMON_INPUT_ARGS ${ARGN})
   if(NOT PROJECT_PATH)
@@ -72,8 +73,12 @@ function(lemon_project_info FILES NAME VERSION)
   lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
 
   if(EXISTS ${ASSEMBLYINFO_FILE})
-
-    set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+	
+	if(PROJECT_BUILD_RC)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+	else()
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+	endif()
 
     set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} PARENT_SCOPE)
 

@@ -17,6 +17,104 @@ title =
  */
 ]==]
 
+rc=
+[==[
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Simplified, PRC) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource1.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION ${version}
+ PRODUCTVERSION ${version}
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "CompanyName", "${company}"
+            VALUE "FileDescription", "${description}"
+            VALUE "FileVersion", "${version_string}"
+            VALUE "InternalName", "${name}"
+            VALUE "LegalCopyright", "Copyright (C) 2012"
+            VALUE "OriginalFilename", "${name}"
+            VALUE "ProductName", "${name}"
+            VALUE "ProductVersion", "${version_string}"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // Chinese (Simplified, PRC) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+]==]
+
 -- the log function
 function Log(message)
    print("[assembly info compiler] " .. message)
@@ -90,11 +188,15 @@ assembly_cpp = arg[3] .. "/assembly.cpp"
 
 errorcode_h = arg[3] .. "/errorcode.h"
 
+assembly_rc = arg[3] .. "/assembly.rc"
+
 headFile = assert(io.open(assembly_h,"w+"),"can't open file to write :" .. assembly_h)
 
 sourceFile = assert(io.open(assembly_cpp,"w+"),"can't open file to write :" .. assembly_cpp)
 
 errorFile = assert(io.open(errorcode_h,"w+"),"can't open file to write :" .. errorcode_h)
+
+rcFile = assert(io.open(assembly_rc,"w+"),"can't open file to write :" .. assembly_rc)
 
 headFile:write(title)
 
@@ -130,9 +232,21 @@ end
 headFile:write("#endif //" .. string.upper(prefix) .. "_ASSEMBLY_H\n")
 errorFile:write("#endif //" .. string.upper(prefix) .. "_ERRORCODE_H\n")
 
+rc = string.gsub(rc,"${version}",version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3])
+
+rc = string.gsub(rc,"${version_string}",version[0] .. "." .. version[1] .. "." .. version[2] .. "." .. version[3])
+
+if(nil ~= assembly.company) then rc = string.gsub(rc,"${company}",assembly.company) end
+
+if(nil ~= assembly.description) then rc = string.gsub(rc,"${description}",assembly.description) end
+
+if(nil ~= assembly.name) then rc = string.gsub(rc,"${name}",assembly.name) end
+
+rcFile:write(rc)
 
 headFile:close()
 sourceFile:close()
 errorFile:close()
+rcFile:close()
 
 
