@@ -87,7 +87,7 @@ BEGIN
             VALUE "FileDescription", "${description}"
             VALUE "FileVersion", "${version_string}"
             VALUE "InternalName", "${name}"
-            VALUE "LegalCopyright", "Copyright (C) 2012"
+            VALUE "LegalCopyright", "Copyright (C) ${YEAR} ${company} All Rights Reserved."
             VALUE "OriginalFilename", "${name}"
             VALUE "ProductName", "${name}"
             VALUE "ProductVersion", "${version_string}"
@@ -235,6 +235,8 @@ errorFile:write("#endif //" .. string.upper(prefix) .. "_ERRORCODE_H\n")
 rc = string.gsub(rc,"${version}",version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3])
 
 rc = string.gsub(rc,"${version_string}",version[0] .. "." .. version[1] .. "." .. version[2] .. "." .. version[3])
+
+rc = string.gsub(rc,"${YEAR}",os.date("%Y",os.time()))
 
 if(nil ~= assembly.company) then rc = string.gsub(rc,"${company}",assembly.company) end
 
