@@ -98,12 +98,14 @@ function(lemon_project NAME)
   else()
     lemon_project_config(FILES ${NAME})
   endif()
+  
   if(NOT PROJECT_STATIC AND WIN32)
 	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
   else()
-	
 	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
   endif()
+  
+  lemon_project_infoc(PO_FILES)
 
   if(LEMON_PROJECT_INCLUDES)
     include_directories(${LEMON_PROJECT_INCLUDES})
@@ -114,11 +116,16 @@ function(lemon_project NAME)
   endif()
 
   if(PROJECT_SHARED)
-    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   elseif(PROJECT_STATIC)
-    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   else()
-    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES})
+    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES} ${PO_FILES})
+  endif()
+  
+  
+  if(PO_FILES)
+	target_link_libraries(${NAME} lemon-lua)
   endif()
 
   if(LEMON_PROJECT_LIBS)
