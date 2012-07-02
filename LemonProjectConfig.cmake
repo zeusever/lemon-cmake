@@ -93,6 +93,32 @@ function(lemon_project_info FILES NAME VERSION)
   endif()
 endfunction()
 
+function(lemon_project_infoc OUTPUT)
+	set(PO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/po.lua)
+	
+	if(EXISTS ${PO_FILE})
+		
+		file(RELATIVE_PATH PATH ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+		
+		set(PATH ${PROJECT_BINARY_DIR}/build/${PATH})
+		
+		set(${OUTPUT} ${PATH}/po.hpp ${PATH}/po.cpp ${PO_FILE} PARENT_SCOPE)
+		
+		source_group("Include Files" FILES ${PATH}/po.hpp)
+		
+		source_group("Source Files" FILES ${PATH}/po.cpp ${PO_FILE})
+		
+		set(COMPILER ${LEMON_CMAKE_ROOT}/extension/programoptionc.lua)
+	
+		add_custom_command(
+			OUTPUT ${PATH}/po.hpp ${PATH}/po.cpp
+			COMMAND ${LEMON_LUA} ${COMPILER} ${PO_FILE} ${PATH}
+			DEPENDS ${COMPILER} ${PO_FILE}
+			COMMENT "run snowolf configc to generate config file parse codes")
+	endif()
+endfunction()
+
+
 macro(lemon_project_include)
   set(LEMON_PROJECT_INCLUDES "${LEMON_PROJECT_INCLUDES};${ARGN}" PARENT_SCOPE)
 endmacro()

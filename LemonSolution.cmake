@@ -3,6 +3,21 @@ include(LemonSourceTree)
 include(LemonGlobalSetting)
 include(LemonProjectConfig)
 
+if(MSVC)
+    foreach(flag_var CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_CXX_FLAGS_RELWITHDEBINFO) 
+        string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
+    endforeach(flag_var)
+    SET (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "MSVC C Debug MT flags " FORCE)    
+    SET (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "MSVC CXX Debug MT flags " FORCE)
+    SET (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "MSVC C Release MT flags " FORCE)
+    SET (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "MSVC CXX Release MT flags " FORCE)
+    SET (CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}" CACHE STRING "MSVC C Debug MT flags " FORCE)    
+    SET (CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}" CACHE STRING "MSVC C Release MT flags " FORCE)
+    SET (CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "MSVC CXX Debug MT flags " FORCE)    
+    SET (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "MSVC CXX Release MT flags " FORCE)
+endif()
+
 function(lemon_solution NAME)
   if(ARGN)    
     lemon_parse_arguments(
@@ -98,12 +113,14 @@ function(lemon_project NAME)
   else()
     lemon_project_config(FILES ${NAME})
   endif()
+  
   if(NOT PROJECT_STATIC AND WIN32)
 	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
   else()
-	
 	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
   endif()
+  
+  lemon_project_infoc(PO_FILES)
 
   if(LEMON_PROJECT_INCLUDES)
     include_directories(${LEMON_PROJECT_INCLUDES})
@@ -114,11 +131,16 @@ function(lemon_project NAME)
   endif()
 
   if(PROJECT_SHARED)
-    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   elseif(PROJECT_STATIC)
-    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   else()
-    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES})
+    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES} ${PO_FILES})
+  endif()
+  
+  
+  if(PO_FILES)
+	target_link_libraries(${NAME} lemon-lua)
   endif()
 
   if(LEMON_PROJECT_LIBS)
@@ -130,7 +152,7 @@ function(lemon_project NAME)
   if(PROJECT_RENAME)
 	set_target_properties(${NAME} PROPERTIES OUTPUT_NAME ${PROJECT_RENAME})
   endif()
-
+ 
 endfunction()
 
 function(lemon_dll_project NAME)
