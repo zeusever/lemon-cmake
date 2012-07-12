@@ -230,6 +230,7 @@ index = 0
 if(nil ~= assembly.errorcode) then
 
    for k,v in ipairs(assembly.errorcode) do 
+	  Log("errorcode :" .. k)
       errorFile:write(prefix .. "_API const LemonError " .. prefix .. "_" .. v.name .. ";\n\n")
       sourceFile:write("const LemonError " .. prefix .. "_" .. v.name .. " = {&" .. prefix .. "_GUID," .. k .. "};\n\n")
    end
