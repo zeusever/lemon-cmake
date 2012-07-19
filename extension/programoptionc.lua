@@ -246,7 +246,10 @@ function write_write(space,prefix,options)
 	local codes = ""
 	
 	for k,v in pairs(options) do
-		codes = codes .. space .. 'stream << "--' .. v.description .. '" << std::endl;'
+		
+		assert(k ~= nil,"parse po file error : program_option need define value filed")
+	
+		if(v.description ~= nil) then codes = codes .. space .. 'stream << "--' .. v.description .. '" << std::endl;' end
 	
 		codes = codes .. space .. 'stream << "' .. prefix .. "_" .. k .. ' = '
 		
