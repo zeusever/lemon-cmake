@@ -118,7 +118,7 @@ class_impl =
 	{		
 		ProgramOption_lua L;
 		
-		if(0 != luaL_dofile(L,lemon::to_ascii(path).c_str()))
+		if(0 != luaL_dofile(L,lemon::to_locale(path).c_str()))
 		{
 			LEMON_DECLARE_ERRORINFO(errorCode);
 
@@ -136,7 +136,7 @@ class_impl =
 	
 	void ProgramOption::Write(const lemon::String & path)
 	{
-		std::ofstream stream(lemon::to_ascii(path));
+		std::ofstream stream(lemon::to_locale(path));
 		
 		${WRITE}
 	}
