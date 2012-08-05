@@ -75,9 +75,9 @@ function(lemon_project_info FILES NAME VERSION)
   if(EXISTS ${ASSEMBLYINFO_FILE})
 	
 	if(PROJECT_BUILD_RC)
-		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h ${PROJECT_CONFIGURE_DIR}/tracelog.h ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h  ${PROJECT_CONFIGURE_DIR}/assembly.rc)
 	else()
-		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h ${PROJECT_CONFIGURE_DIR}/tracelog.h)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
 	endif()
 
     set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} PARENT_SCOPE)
@@ -88,7 +88,7 @@ function(lemon_project_info FILES NAME VERSION)
       COMMAND ${LEMON_LUA} ${COMPILER} ${ASSEMBLYINFO_FILE} ${VERSION}  ${PROJECT_CONFIGURE_DIR} ${NAME}
       DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE}
       COMMENT "run assembly info compiler ...")
-    source_group("Include Files" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/errorcode.h ${PROJECT_CONFIGURE_DIR}/tracelog.h)
+    source_group("Include Files" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/errorcode.h)
     source_group("Source Files" FILES ${PROJECT_CONFIGURE_DIR}/assembly.cpp  ${ASSEMBLYINFO_FILE})
   endif()
 endfunction()

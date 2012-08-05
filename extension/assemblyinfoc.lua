@@ -188,8 +188,6 @@ assembly_cpp = arg[3] .. "/assembly.cpp"
 
 errorcode_h = arg[3] .. "/errorcode.h"
 
-tracelog_h = arg[3] .. "/tracelog.h"
-
 assembly_rc = arg[3] .. "/assembly.rc"
 
 headFile = assert(io.open(assembly_h,"w+"),"can't open file to write :" .. assembly_h)
@@ -197,8 +195,6 @@ headFile = assert(io.open(assembly_h,"w+"),"can't open file to write :" .. assem
 sourceFile = assert(io.open(assembly_cpp,"w+"),"can't open file to write :" .. assembly_cpp)
 
 errorFile = assert(io.open(errorcode_h,"w+"),"can't open file to write :" .. errorcode_h)
-
-tracelogFile = assert(io.open(tracelog_h,"w+"),"can't open file to write :" .. tracelog_h)
 
 rcFile = assert(io.open(assembly_rc,"w+"),"can't open file to write :" .. assembly_rc)
 
@@ -208,15 +204,11 @@ headFile:write("#ifndef " .. prefix .. "_ASSEMBLY_H\n")
 headFile:write("#define " .. prefix .. "_ASSEMBLY_H\n")
 errorFile:write("#ifndef " .. prefix .. "_ERRORCODE_H\n")
 errorFile:write("#define " .. prefix .. "_ERRORCODE_H\n")
-tracelogFile:write("#ifndef " .. prefix .. "_TRACELOG_H\n")
-tracelogFile:write("#define " .. prefix .. "_TRACELOG_H\n")
 
 headFile:write("#include \"configure.h\"\n")
 headFile:write("#include <lemon/sys/abi.h>\n\n")
 errorFile:write("#include \"configure.h\"\n")
 errorFile:write("#include <lemon/sys/abi.h>\n\n")
-tracelogFile:write("#include \"configure.h\"\n")
-tracelogFile:write("#include <lemon/sys/abi.h>\n\n")
 sourceFile:write("#include \"assembly.h\"\n\n")
 sourceFile:write("#include \"errorcode.h\"\n\n")
 
@@ -236,16 +228,8 @@ if(nil ~= assembly.errorcode) then
 
 end
 
-if(nil ~= assembly.tracelog) then
-   for k,v in ipairs(assembly.tracelog) do 
-      tracelogFile:write(prefix .. "_API const LemonTraceLogFlag " .. prefix .. "_" .. v.name .. ";\n\n")
-      sourceFile:write("const LemonTraceLogFlag " .. prefix .. "_" .. v.name .. " = {&" .. prefix .. "_GUID," .. k .. "};\n\n")
-   end
-end
-
 headFile:write("#endif //" .. string.upper(prefix) .. "_ASSEMBLY_H\n")
 errorFile:write("#endif //" .. string.upper(prefix) .. "_ERRORCODE_H\n")
-tracelogFile:write("#endif //" .. string.upper(prefix) .. "_ERRORCODE_H\n")
 
 rc = string.gsub(rc,"${version}",version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3])
 
