@@ -101,7 +101,7 @@ function(lemon_project NAME)
    lemon_parse_arguments(
     lemon_project
     PROJECT 
-    LEMON_OPTION_ARGS SHARED STATIC EXE
+    LEMON_OPTION_ARGS SHARED STATIC EXE PPC
     LEMON_ONE_VALUE_KEY VERSION  RENAME
     LEMON_INPUT_ARGS ${ARGN})
 
@@ -120,6 +120,10 @@ function(lemon_project NAME)
 	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
   endif()
   
+  if(PROJECT_PPC)
+	lemon_project_ppc(PPC_FILES ${NAME})
+  endif()
+  
   lemon_project_infoc(PO_FILES)
 
   if(LEMON_PROJECT_INCLUDES)
@@ -131,16 +135,20 @@ function(lemon_project NAME)
   endif()
 
   if(PROJECT_SHARED)
-    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PO_FILES} ${PPC_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   elseif(PROJECT_STATIC)
-    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PO_FILES} ${PPC_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   else()
-    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES} ${PO_FILES})
+    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES} ${PO_FILES} ${PPC_FILES})
   endif()
   
   
   if(PO_FILES)
 	target_link_libraries(${NAME} lemon-lua)
+  endif()
+  
+  if(PROJECT_PPC)
+	add_dependencies(${NAME} tools-lemon-ppc)
   endif()
 
   if(LEMON_PROJECT_LIBS)

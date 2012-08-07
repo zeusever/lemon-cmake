@@ -93,7 +93,7 @@ function(lemon_project_info FILES NAME VERSION)
   endif()
 endfunction()
 
-function(lemon_project_infoc OUTPUT)
+function(lemon_project_infoc OUTPUT )
 	set(PO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/po.lua)
 	
 	if(EXISTS ${PO_FILE})
@@ -115,6 +115,41 @@ function(lemon_project_infoc OUTPUT)
 			COMMAND ${LEMON_LUA} ${COMPILER} ${PO_FILE} ${PATH}
 			DEPENDS ${COMPILER} ${PO_FILE}
 			COMMENT "run snowolf configc to generate config file parse codes")
+	endif()
+endfunction()
+
+
+function(lemon_project_ppc OUTPUT NAME)
+
+	set(PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+	set(ASSEMBLYINFO_FILE ${PROJECT_PATH}/assemblyinfo.lua)
+	
+	set(LEMON_PPC_WORKSPACE ${PROJECT_BINARY_DIR}/build/)
+	if(WIN32)
+		set(LEMON_PPC ${LEMON_PPC_WORKSPACE}/bin/lemon-ppc.exe)
+	else()
+		set(LEMON_PPC ${LEMON_PPC_WORKSPACE}/bin/lemon-ppc)
+	endif()
+	
+	lemon_c_cxx_files(SRC PATH ${PROJECT_PATH})
+	
+	set(FILES ${PROJECT_BINARY_DIR}/build/metadata/${NAME})
+	
+	file(RELATIVE_PATH OBJECT_PATH ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+	
+	set(OBJECT_PATH ${LEMON_BUILD_TARGET_DIR}/${OBJECT_PATH})
+	
+	if(EXISTS ${ASSEMBLYINFO_FILE})
+		
+		set(${OUTPUT} ${FILES} PARENT_SCOPE)
+	
+		add_custom_command(
+		OUTPUT ${FILES}
+		COMMAND ${LEMON_PPC} ${CMAKE_CURRENT_SOURCE_DIR} ${OBJECT_PATH} ${LEMON_BUILD_TARGET_DIR}
+		WORKING_DIRECTORY ${LEMON_PPC_WORKSPACE}
+		DEPENDS ${SRC} ${LEMON_PPC}
+		COMMENT "run lemon preprocessor compiler ...")
 	endif()
 endfunction()
 
