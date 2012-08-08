@@ -101,23 +101,35 @@ function(lemon_project NAME)
    lemon_parse_arguments(
     lemon_project
     PROJECT 
-    LEMON_OPTION_ARGS SHARED STATIC EXE
+    LEMON_OPTION_ARGS SHARED STATIC EXE BOOTSTRAP
     LEMON_ONE_VALUE_KEY VERSION  RENAME
     LEMON_INPUT_ARGS ${ARGN})
 
   if(NOT PROJECT_VERSION)
     set(PROJECT_VERSION ${LEMON_SOLUTION_VERSION})
   endif()
-  if(PROJECT_SHARED)
-    lemon_project_config(FILES ${NAME} SHARED)
-  else()
-    lemon_project_config(FILES ${NAME})
-  endif()
   
-  if(NOT PROJECT_STATIC AND WIN32)
-	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
+  if(PROJECT_BOOTSTRAP)
+	if(PROJECT_SHARED)
+		lemon_project_config(FILES ${NAME} SHARED BOOTSTRAP)
+	else()
+		lemon_project_config(FILES ${NAME} BOOTSTRAP)
+	endif()
+  
+	if(NOT PROJECT_STATIC AND WIN32)
+		lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
+	else()
+		lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
+	endif()
   else()
-	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
+  
+	if(PROJECT_SHARED)
+		lemon_project_config(FILES ${NAME} SHARED)
+	else()
+		lemon_project_config(FILES ${NAME})
+	endif()
+  
+	lemon_rc(INFO_FILES ${NAME} ${PROJECT_VERSION})
   endif()
   
   lemon_project_infoc(PO_FILES)
@@ -141,6 +153,10 @@ function(lemon_project NAME)
   
   if(PO_FILES)
 	target_link_libraries(${NAME} lemon-lua)
+  endif()
+  
+  if(NOT PROJECT_BOOTSTRAP)
+	add_dependencies(${NAME} tools-lemon-boostrap-rc)
   endif()
 
   if(LEMON_PROJECT_LIBS)
