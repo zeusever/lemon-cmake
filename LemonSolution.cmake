@@ -101,7 +101,7 @@ function(lemon_project NAME)
    lemon_parse_arguments(
     lemon_project
     PROJECT 
-    LEMON_OPTION_ARGS SHARED STATIC EXE BOOTSTRAP
+    LEMON_OPTION_ARGS SHARED STATIC EXE BOOTSTRAP BOOTSTRAP1
     LEMON_ONE_VALUE_KEY VERSION  RENAME
     LEMON_INPUT_ARGS ${ARGN})
 
@@ -128,8 +128,14 @@ function(lemon_project NAME)
 	else()
 		lemon_project_config(FILES ${NAME})
 	endif()
+	
+	if(NOT PROJECT_STATIC AND WIN32)
+		lemon_rc(INFO_FILES ${NAME} ${PROJECT_VERSION} ${PROJECT_BOOTSTRAP1} BUILD_RC)
+	else()
+		lemon_rc(INFO_FILES ${NAME} ${PROJECT_VERSION} ${PROJECT_BOOTSTRAP1})
+	endif()
   
-	lemon_rc(INFO_FILES ${NAME} ${PROJECT_VERSION})
+	
   endif()
   
   lemon_project_infoc(PO_FILES)
@@ -156,7 +162,11 @@ function(lemon_project NAME)
   endif()
   
   if(NOT PROJECT_BOOTSTRAP)
-	add_dependencies(${NAME} tools-lemon-boostrap-rc)
+	if(PROJECT_BOOTSTRAP1)
+		add_dependencies(${NAME} tools-lemon-boostrap-rc)
+	else()
+		add_dependencies(${NAME} tools-lemon-rc)
+	endif()
   endif()
 
   if(LEMON_PROJECT_LIBS)

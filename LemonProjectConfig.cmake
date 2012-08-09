@@ -104,6 +104,8 @@ function(lemon_rc FILES NAME VERSION)
 	lemon_parse_arguments(
     lemon_rc
     PROJECT
+	LEMON_OPTION_ARGS BOOTSTRAP1
+	LEMON_OPTION_ARGS BUILD_RC 
     LEMON_ONE_VALUE_KEY PATH DIR
     LEMON_INPUT_ARGS ${ARGN})
 	
@@ -123,13 +125,30 @@ function(lemon_rc FILES NAME VERSION)
 	
 	if(EXISTS ${ASSEMBLYINFO_FILE})
 	
+	if(PROJECT_BUILD_RC)
+		set(RC "TRUE")
+	else()
+		set(RC "FALSE")
+	endif()
+	
 	if(WIN32)
-		set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc.exe)
-		
-		set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h  ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+		if(PROJECT_BOOTSTRAP1)
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-boostrap-rc.exe)
+		else()
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc.exe)
+		endif()
+		if(PROJECT_BUILD_RC)
+			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h  ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+		else()
+			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+		endif()
 	else()
 	
-		set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc)
+		if(PROJECT_BOOTSTRAP1)
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-boostrap-rc)
+		else()
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc)
+		endif()
 		
 		set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
 	endif()
@@ -138,7 +157,7 @@ function(lemon_rc FILES NAME VERSION)
 
     add_custom_command(
 		OUTPUT ${GEN_FILES}  
-		COMMAND ${COMPILER} ${SCRIPT_FILE} ${NAME} ${VERSION} ${PROJECT_PATH} ${PROJECT_CONFIGURE_DIR} ${RESOURCE_PATH}
+		COMMAND ${COMPILER} ${SCRIPT_FILE} ${NAME} ${VERSION} ${PROJECT_PATH} ${PROJECT_CONFIGURE_DIR} ${RESOURCE_PATH} ${RC}
 		DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILE}
 		COMMENT "run assembly info compiler ...")
 		source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/errorcode.h)

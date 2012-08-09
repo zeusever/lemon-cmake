@@ -214,6 +214,7 @@ sourceFile:write("#include \"errorcode.h\"\n\n")
 
 headFile:write(prefix .. "_API const LemonUuid " .. prefix .. "_GUID;\n\n")
 headFile:write(prefix .. "_API const LemonVersion " .. prefix .. "_VERSION;\n\n")
+headFile:write("#define " .. prefix .. "_I18N(msg)\tLemonI18nText(&" .. prefix .. "_GUID,LEMON_TEXT(msg))\n\n")
 sourceFile:write("const LemonUuid " .. prefix .. "_GUID = " .. guid .. ";\n\n")
 sourceFile:write("const LemonVersion " .. prefix .. "_VERSION = {" .. version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3] .. "};\n\n")
 
