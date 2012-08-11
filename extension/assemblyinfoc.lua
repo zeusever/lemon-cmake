@@ -194,7 +194,7 @@ headFile = assert(io.open(assembly_h,"w+"),"can't open file to write :" .. assem
 
 sourceFile = assert(io.open(assembly_cpp,"w+"),"can't open file to write :" .. assembly_cpp)
 
-errorFile = assert(io.open(errorcode_h,"w+"),"can't open file to write :" .. errorcode_h)
+--errorFile = assert(io.open(errorcode_h,"w+"),"can't open file to write :" .. errorcode_h)
 
 rcFile = assert(io.open(assembly_rc,"w+"),"can't open file to write :" .. assembly_rc)
 
@@ -202,19 +202,15 @@ headFile:write(title)
 
 headFile:write("#ifndef " .. prefix .. "_ASSEMBLY_H\n")
 headFile:write("#define " .. prefix .. "_ASSEMBLY_H\n")
-errorFile:write("#ifndef " .. prefix .. "_ERRORCODE_H\n")
-errorFile:write("#define " .. prefix .. "_ERRORCODE_H\n")
+
 
 headFile:write("#include \"configure.h\"\n")
 headFile:write("#include <lemon/sys/abi.h>\n\n")
-errorFile:write("#include \"configure.h\"\n")
-errorFile:write("#include <lemon/sys/abi.h>\n\n")
 sourceFile:write("#include \"assembly.h\"\n\n")
-sourceFile:write("#include \"errorcode.h\"\n\n")
 
 headFile:write(prefix .. "_API const LemonUuid " .. prefix .. "_GUID;\n\n")
 headFile:write(prefix .. "_API const LemonVersion " .. prefix .. "_VERSION;\n\n")
-headFile:write("#define " .. prefix .. "_I18N(msg)\tLemonI18nText(&" .. prefix .. "_GUID,LEMON_TEXT(msg))\n\n")
+headFile:write("#define " .. prefix .. "_I18N_TEXT(msg)\tLemonI18nText(&" .. prefix .. "_GUID,LEMON_TEXT(msg))\n\n")
 sourceFile:write("const LemonUuid " .. prefix .. "_GUID = " .. guid .. ";\n\n")
 sourceFile:write("const LemonVersion " .. prefix .. "_VERSION = {" .. version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3] .. "};\n\n")
 
@@ -223,14 +219,13 @@ index = 0
 if(nil ~= assembly.errorcode) then
 
    for k,v in ipairs(assembly.errorcode) do 
-      errorFile:write(prefix .. "_API const LemonError " .. prefix .. "_" .. v.name .. ";\n\n")
+      headFile:write(prefix .. "_API const LemonError " .. prefix .. "_" .. v.name .. ";\n\n")
       sourceFile:write("const LemonError " .. prefix .. "_" .. v.name .. " = {&" .. prefix .. "_GUID," .. k .. "};\n\n")
    end
 
 end
 
 headFile:write("#endif //" .. string.upper(prefix) .. "_ASSEMBLY_H\n")
-errorFile:write("#endif //" .. string.upper(prefix) .. "_ERRORCODE_H\n")
 
 rc = string.gsub(rc,"${version}",version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3])
 
@@ -248,7 +243,7 @@ rcFile:write(rc)
 
 headFile:close()
 sourceFile:close()
-errorFile:close()
+
 rcFile:close()
 
 

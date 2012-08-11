@@ -82,9 +82,9 @@ function(lemon_project_info FILES NAME VERSION)
   if(EXISTS ${ASSEMBLYINFO_FILE})
 	
 	if(PROJECT_BUILD_RC)
-		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h  ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/assembly.rc)
 	else()
-		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp )
 	endif()
 
     set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} PARENT_SCOPE)
@@ -95,7 +95,7 @@ function(lemon_project_info FILES NAME VERSION)
       COMMAND ${LEMON_LUA} ${COMPILER} ${ASSEMBLYINFO_FILE} ${VERSION}  ${PROJECT_CONFIGURE_DIR} ${NAME}
       DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE}
       COMMENT "run assembly info compiler ...")
-    source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+    source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h)
     source_group("Source Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.cpp  ${ASSEMBLYINFO_FILE})
   endif()
 endfunction()
@@ -117,11 +117,11 @@ function(lemon_rc FILES NAME VERSION)
 	
 	lemon_c_cxx_files(SRC PATH ${PROJECT_PATH} DIR ${PROJECT_DIR})
 	
+	lemon_scan_files(SCRIPT_FILES "Source Files\\${PROJECT_DIR}\\Scripts" ${LEMON_RC_SCRIPT_DIR} PATTERNS *.lua)
+	
 	lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
 	
 	set(RESOURCE_PATH ${PROJECT_BINARY_DIR}/build/share/lemon/${NAME})
-	
-	set(SCRIPT_FILE ${PROJECT_SOURCE_DIR}/tools/lemon/rc/rc.lua)
 	
 	if(EXISTS ${ASSEMBLYINFO_FILE})
 	
@@ -138,9 +138,9 @@ function(lemon_rc FILES NAME VERSION)
 			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc.exe)
 		endif()
 		if(PROJECT_BUILD_RC)
-			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h  ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/assembly.rc)
 		else()
-			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
 		endif()
 	else()
 	
@@ -150,17 +150,17 @@ function(lemon_rc FILES NAME VERSION)
 			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc)
 		endif()
 		
-		set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+		set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
 	endif()
 
-    set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} PARENT_SCOPE)
+    set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILES} PARENT_SCOPE)
 
     add_custom_command(
 		OUTPUT ${GEN_FILES}  
-		COMMAND ${COMPILER} ${SCRIPT_FILE} ${NAME} ${VERSION} ${PROJECT_PATH} ${PROJECT_CONFIGURE_DIR} ${RESOURCE_PATH} ${RC}
-		DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILE}
+		COMMAND ${COMPILER} ${LEMON_RC_SCRIPT_DIR} ${VERSION} ${PROJECT_PATH} ${PROJECT_CONFIGURE_DIR} ${RESOURCE_PATH} ${RC}
+		DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILES}
 		COMMENT "run assembly info compiler ...")
-		source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+		source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h)
 		source_group("Source Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.cpp  ${ASSEMBLYINFO_FILE})
 	endif()
 	

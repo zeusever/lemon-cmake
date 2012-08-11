@@ -19,3 +19,8 @@ set(LEMON_BUILD_TARGET_DIR ${PROJECT_BINARY_DIR}/build/)
 
 # open the ide folder filter
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# set the lemon-rc script directory
+if(NOT LEMON_RC_SCRIPT_DIR)
+	set(LEMON_RC_SCRIPT_DIR ${PROJECT_SOURCE_DIR}/tools/lemon/rc/scripts)
+endif()
