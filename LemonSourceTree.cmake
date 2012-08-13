@@ -62,17 +62,18 @@ function(lemon_c_cxx_files RESULT)
   lemon_parse_arguments(
     lemon_c_cxx_files
     FILES 
-    LEMON_ONE_VALUE_KEY PATH
+    LEMON_ONE_VALUE_KEY PATH DIR
     LEMON_INPUT_ARGS ${ARGN})
   # if not supply PATH arg,then set FILES_PATH to ${CMAKE_CURRENT_SOURCE_DIR}
   if(NOT FILES_PATH)
     set(FILES_PATH ${CMAKE_CURRENT_SOURCE_DIR})
   endif()
+ 
   # 
-  lemon_scan_files(FILES "Include Files" ${FILES_PATH} PATTERNS *.h *.hpp *.hxx)
+  lemon_scan_files(FILES "Include Files\\${FILES_DIR}" ${FILES_PATH} PATTERNS *.h *.hpp *.hxx)
 
   list(APPEND TEMP  "${FILES}")
-  lemon_scan_files(FILES "Source Files" ${FILES_PATH} PATTERNS  *.c *.cpp *.cc *.cxx)
+  lemon_scan_files(FILES "Source Files\\${FILES_DIR}" ${FILES_PATH} PATTERNS  *.c *.cpp *.cc *.cxx)
   list(APPEND TEMP  "${FILES}")
 
   set(${RESULT} ${TEMP} PARENT_SCOPE)

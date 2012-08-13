@@ -27,6 +27,11 @@ function(lemon_project_configure_dir PATH RESULT)
   set(${RESULT} ${IM} PARENT_SCOPE)
 endfunction()
 
+function(lemon_project_bootstrap_configure_dir PATH RESULT)
+  string(REPLACE ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR}/bootstrap IM ${PATH}/)
+  set(${RESULT} ${IM} PARENT_SCOPE)
+endfunction()
+
 ############################################################
 # add the win32 version macro to compiler /D 
 ###########################################################
@@ -58,7 +63,7 @@ function(lemon_project_info FILES NAME VERSION)
     lemon_project_info
     PROJECT
 	LEMON_OPTION_ARGS BUILD_RC
-    LEMON_ONE_VALUE_KEY PATH
+    LEMON_ONE_VALUE_KEY PATH DIR
     LEMON_INPUT_ARGS ${ARGN})
   if(NOT PROJECT_PATH)
     set(PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
@@ -66,18 +71,20 @@ function(lemon_project_info FILES NAME VERSION)
 
   set(ASSEMBLYINFO_FILE ${PROJECT_PATH}/assemblyinfo.lua)
 
-  lemon_c_cxx_files(SRC PATH ${PROJECT_PATH})
+  lemon_c_cxx_files(SRC PATH ${PROJECT_PATH} DIR ${PROJECT_DIR})
 
   set(COMPILER ${LEMON_CMAKE_ROOT}/extension/assemblyinfoc.lua)
 
-  lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
+  lemon_project_bootstrap_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
+  
+  include_directories(BEFORE ${PROJECT_CONFIGURE_DIR})
 
   if(EXISTS ${ASSEMBLYINFO_FILE})
 	
 	if(PROJECT_BUILD_RC)
-		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h  ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/assembly.rc)
 	else()
-		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/errorcode.h)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp )
 	endif()
 
     set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} PARENT_SCOPE)
@@ -88,12 +95,78 @@ function(lemon_project_info FILES NAME VERSION)
       COMMAND ${LEMON_LUA} ${COMPILER} ${ASSEMBLYINFO_FILE} ${VERSION}  ${PROJECT_CONFIGURE_DIR} ${NAME}
       DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE}
       COMMENT "run assembly info compiler ...")
-    source_group("Include Files" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/errorcode.h)
-    source_group("Source Files" FILES ${PROJECT_CONFIGURE_DIR}/assembly.cpp  ${ASSEMBLYINFO_FILE})
+    source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h)
+    source_group("Source Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.cpp  ${ASSEMBLYINFO_FILE})
   endif()
 endfunction()
 
-function(lemon_project_infoc OUTPUT )
+function(lemon_rc FILES NAME VERSION)
+	lemon_parse_arguments(
+    lemon_rc
+    PROJECT
+	LEMON_OPTION_ARGS BOOTSTRAP1
+	LEMON_OPTION_ARGS BUILD_RC 
+    LEMON_ONE_VALUE_KEY PATH DIR
+    LEMON_INPUT_ARGS ${ARGN})
+	
+	if(NOT PROJECT_PATH)
+		set(PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+	endif()
+	
+	set(ASSEMBLYINFO_FILE ${PROJECT_PATH}/assemblyinfo.lua)
+	
+	lemon_c_cxx_files(SRC PATH ${PROJECT_PATH} DIR ${PROJECT_DIR})
+	
+	lemon_scan_files(SCRIPT_FILES "Source Files\\${PROJECT_DIR}\\Scripts" ${LEMON_RC_SCRIPT_DIR} PATTERNS *.lua)
+	
+	lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
+	
+	set(RESOURCE_PATH ${PROJECT_BINARY_DIR}/build/share/lemon/${NAME})
+	
+	if(EXISTS ${ASSEMBLYINFO_FILE})
+	
+	if(PROJECT_BUILD_RC)
+		set(RC "TRUE")
+	else()
+		set(RC "FALSE")
+	endif()
+	
+	if(WIN32)
+		if(PROJECT_BOOTSTRAP1)
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-boostrap-rc.exe)
+		else()
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc.exe)
+		endif()
+		if(PROJECT_BUILD_RC)
+			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+		else()
+			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
+		endif()
+	else()
+	
+		if(PROJECT_BOOTSTRAP1)
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-boostrap-rc)
+		else()
+			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc)
+		endif()
+		
+		set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
+	endif()
+
+    set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILES} PARENT_SCOPE)
+
+    add_custom_command(
+		OUTPUT ${GEN_FILES}  
+		COMMAND ${COMPILER} ${LEMON_RC_SCRIPT_DIR} ${VERSION} ${PROJECT_PATH} ${PROJECT_CONFIGURE_DIR} ${RESOURCE_PATH} ${RC}
+		DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILES}
+		COMMENT "run assembly info compiler ...")
+		source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.h)
+		source_group("Source Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_DIR}/assembly.cpp  ${ASSEMBLYINFO_FILE})
+	endif()
+	
+endfunction()
+
+function(lemon_project_infoc OUTPUT)
 	set(PO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/po.lua)
 	
 	if(EXISTS ${PO_FILE})
@@ -115,41 +188,6 @@ function(lemon_project_infoc OUTPUT )
 			COMMAND ${LEMON_LUA} ${COMPILER} ${PO_FILE} ${PATH}
 			DEPENDS ${COMPILER} ${PO_FILE}
 			COMMENT "run snowolf configc to generate config file parse codes")
-	endif()
-endfunction()
-
-
-function(lemon_project_ppc OUTPUT NAME)
-
-	set(PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-
-	set(ASSEMBLYINFO_FILE ${PROJECT_PATH}/assemblyinfo.lua)
-	
-	set(LEMON_PPC_WORKSPACE ${PROJECT_BINARY_DIR}/build/)
-	if(WIN32)
-		set(LEMON_PPC ${LEMON_PPC_WORKSPACE}/bin/lemon-ppc.exe)
-	else()
-		set(LEMON_PPC ${LEMON_PPC_WORKSPACE}/bin/lemon-ppc)
-	endif()
-	
-	lemon_c_cxx_files(SRC PATH ${PROJECT_PATH})
-	
-	set(FILES ${PROJECT_BINARY_DIR}/build/metadata/${NAME})
-	
-	file(RELATIVE_PATH OBJECT_PATH ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-	
-	set(OBJECT_PATH ${LEMON_BUILD_TARGET_DIR}/${OBJECT_PATH})
-	
-	if(EXISTS ${ASSEMBLYINFO_FILE})
-		
-		set(${OUTPUT} ${FILES} PARENT_SCOPE)
-	
-		add_custom_command(
-		OUTPUT ${FILES}
-		COMMAND ${LEMON_PPC} ${CMAKE_CURRENT_SOURCE_DIR} ${OBJECT_PATH} ${LEMON_BUILD_TARGET_DIR}
-		WORKING_DIRECTORY ${LEMON_PPC_WORKSPACE}
-		DEPENDS ${SRC} ${LEMON_PPC}
-		COMMENT "run lemon preprocessor compiler ...")
 	endif()
 endfunction()
 
@@ -180,16 +218,22 @@ function(lemon_project_config FILES NAME)
   lemon_parse_arguments(
     lemon_project_config
     PROJECT
-    LEMON_OPTION_ARGS SHARED
-    LEMON_ONE_VALUE_KEY PATH 
+    LEMON_OPTION_ARGS SHARED BOOTSTRAP
+    LEMON_ONE_VALUE_KEY PATH DIR
     LEMON_INPUT_ARGS ${ARGN})
 
   if(NOT PROJECT_PATH)
     set(PROJECT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
   endif()
   # get the current project configure file output directory
-  lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
+  if(PROJECT_BOOTSTRAP)
+	lemon_project_bootstrap_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
+  else()
+	lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
+  endif()
   lemon_project_prefix(${NAME} PROJECT_PREFIX)
+  
+ 
 
   #add the target flags
   lemon_target_flags(${NAME})
@@ -221,7 +265,7 @@ function(lemon_project_config FILES NAME)
   endif()
   file(APPEND ${PROJECT_CONFIGURE_H} "#endif //${PROJECT_PREFIX}_CONFIGURE_H\n")
   configure_file(${PROJECT_CONFIGURE_H} ${PROJECT_CONFIGURE_H} IMMEDIATE)
-  source_group("Include Files" FILES ${PROJECT_CONFIGURE_H})
+  source_group("Include Files\\${PROJECT_DIR}" FILES ${PROJECT_CONFIGURE_H})
   set(${FILES} ${PROJECT_CONFIGURE_H} ${ASSEMBLY_FILES} PARENT_SCOPE)
   lemon_message("do lemon project<${NAME}> configure action -- success")
   set(LEMON_PROJECT_INCLUDES "${LEMON_PROJECT_INCLUDES}" PARENT_SCOPE)

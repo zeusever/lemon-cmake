@@ -101,27 +101,41 @@ function(lemon_project NAME)
    lemon_parse_arguments(
     lemon_project
     PROJECT 
-    LEMON_OPTION_ARGS SHARED STATIC EXE PPC
+    LEMON_OPTION_ARGS SHARED STATIC EXE BOOTSTRAP BOOTSTRAP1
     LEMON_ONE_VALUE_KEY VERSION  RENAME
     LEMON_INPUT_ARGS ${ARGN})
 
   if(NOT PROJECT_VERSION)
     set(PROJECT_VERSION ${LEMON_SOLUTION_VERSION})
   endif()
-  if(PROJECT_SHARED)
-    lemon_project_config(FILES ${NAME} SHARED)
-  else()
-    lemon_project_config(FILES ${NAME})
-  endif()
   
-  if(NOT PROJECT_STATIC AND WIN32)
-	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
-  else()
-	lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
-  endif()
+  if(PROJECT_BOOTSTRAP)
+	if(PROJECT_SHARED)
+		lemon_project_config(FILES ${NAME} SHARED BOOTSTRAP)
+	else()
+		lemon_project_config(FILES ${NAME} BOOTSTRAP)
+	endif()
   
-  if(PROJECT_PPC)
-	lemon_project_ppc(PPC_FILES ${NAME})
+	if(NOT PROJECT_STATIC AND WIN32)
+		lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION} BUILD_RC)
+	else()
+		lemon_project_info(INFO_FILES ${NAME} ${PROJECT_VERSION})
+	endif()
+  else()
+  
+	if(PROJECT_SHARED)
+		lemon_project_config(FILES ${NAME} SHARED)
+	else()
+		lemon_project_config(FILES ${NAME})
+	endif()
+	
+	if(NOT PROJECT_STATIC AND WIN32)
+		lemon_rc(INFO_FILES ${NAME} ${PROJECT_VERSION} ${PROJECT_BOOTSTRAP1} BUILD_RC)
+	else()
+		lemon_rc(INFO_FILES ${NAME} ${PROJECT_VERSION} ${PROJECT_BOOTSTRAP1})
+	endif()
+  
+	
   endif()
   
   lemon_project_infoc(PO_FILES)
@@ -135,11 +149,11 @@ function(lemon_project NAME)
   endif()
 
   if(PROJECT_SHARED)
-    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PO_FILES} ${PPC_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} SHARED ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   elseif(PROJECT_STATIC)
-    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PO_FILES} ${PPC_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
+    add_library(${NAME} STATIC ${FILES} ${INFO_FILES} ${PO_FILES} ${PROJECT_UNPARSED_ARGUMENTS})
   else()
-    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES} ${PO_FILES} ${PPC_FILES})
+    add_executable(${NAME} ${PROJECT_UNPARSED_ARGUMENTS} ${FILES} ${INFO_FILES} ${PO_FILES})
   endif()
   
   
@@ -147,8 +161,12 @@ function(lemon_project NAME)
 	target_link_libraries(${NAME} lemon-lua)
   endif()
   
-  if(PROJECT_PPC)
-	add_dependencies(${NAME} tools-lemon-ppc)
+  if(NOT PROJECT_BOOTSTRAP)
+	if(PROJECT_BOOTSTRAP1)
+		add_dependencies(${NAME} tools-lemon-boostrap-rc)
+	else()
+		add_dependencies(${NAME} tools-lemon-rc)
+	endif()
   endif()
 
   if(LEMON_PROJECT_LIBS)
