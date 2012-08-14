@@ -346,7 +346,7 @@ sourceFile:write("#include \"po.hpp\"\n\n")
 sourceFile:write("#include <fstream>\n\n")
 sourceFile:write("#include <memory>\n\n")
 sourceFile:write("#include <lemon/lua/lua.hpp>\n\n")
-sourceFile:write("#include <lemon/sys/errorcode.h>\n")
+sourceFile:write("#include <lemon/sys/assembly.h>\n")
 
 sourceFile:write("namespace " .. string.gsub(program_option.namespace,"%.(%w+)","{ namespace %1") .. "{\n\n")
 

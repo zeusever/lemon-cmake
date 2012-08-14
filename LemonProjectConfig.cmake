@@ -138,9 +138,9 @@ function(lemon_rc FILES NAME VERSION)
 			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc.exe)
 		endif()
 		if(PROJECT_BUILD_RC)
-			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/assembly.rc)
+			set(GEN_FILES  ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp ${PROJECT_CONFIGURE_DIR}/assembly.rc)
 		else()
-			set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
+			set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
 		endif()
 	else()
 	
@@ -150,13 +150,13 @@ function(lemon_rc FILES NAME VERSION)
 			set(COMPILER ${PROJECT_BINARY_DIR}/build/bin/lemon-rc)
 		endif()
 		
-		set(GEN_FILES ${RESOURCE_PATH} ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
+		set(GEN_FILES ${PROJECT_CONFIGURE_DIR}/assembly.h ${PROJECT_CONFIGURE_DIR}/assembly.cpp)
 	endif()
 
-    set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILES} PARENT_SCOPE)
+    set(${FILES} ${GEN_FILES} ${ASSEMBLYINFO_FILE} PARENT_SCOPE)
 
     add_custom_command(
-		OUTPUT ${GEN_FILES}  
+		OUTPUT ${GEN_FILES} ${RESOURCE_PATH}
 		COMMAND ${COMPILER} ${LEMON_RC_SCRIPT_DIR} ${VERSION} ${PROJECT_PATH} ${PROJECT_CONFIGURE_DIR} ${RESOURCE_PATH} ${RC}
 		DEPENDS ${COMPILER} ${SRC} ${ASSEMBLYINFO_FILE} ${SCRIPT_FILES}
 		COMMENT "run assembly info compiler ...")
