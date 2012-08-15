@@ -136,7 +136,16 @@ class_impl =
 	
 	void ProgramOption::Write(const lemon::String & path)
 	{
-		std::ofstream stream(lemon::to_locale(path).c_str());
+		std::ofstream stream(lemon::to_locale(path).c_str(),std::ios::trunc);
+
+		if(!stream.is_open())
+		{
+			lemon::error_info errorCode;
+
+			LEMON_USER_ERROR(errorCode,LEMON_SYS_CREATE_PO_SCRIPT_FILE_ERROR);
+
+			errorCode.check_throw();
+		}
 		
 		${WRITE}
 	}
