@@ -122,6 +122,8 @@ function(lemon_rc FILES NAME VERSION)
 	lemon_project_configure_dir(${PROJECT_PATH} PROJECT_CONFIGURE_DIR)
 	
 	set(RESOURCE_PATH ${PROJECT_BINARY_DIR}/build/share/lemon/${NAME})
+
+  file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/build/share/lemon/)
 	
 	if(EXISTS ${ASSEMBLYINFO_FILE})
 	

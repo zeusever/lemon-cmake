@@ -136,7 +136,7 @@ class_impl =
 	
 	void ProgramOption::Write(const lemon::String & path)
 	{
-		std::ofstream stream(lemon::to_locale(path));
+		std::ofstream stream(lemon::to_locale(path).c_str());
 		
 		${WRITE}
 	}
