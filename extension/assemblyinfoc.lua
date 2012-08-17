@@ -206,11 +206,13 @@ headFile:write("#define " .. prefix .. "_ASSEMBLY_H\n")
 
 headFile:write("#include \"configure.h\"\n")
 headFile:write("#include <lemon/sys/abi.h>\n\n")
+headFile:write("#include <lemon/resource/abi.h>\n\n")
 sourceFile:write("#include \"assembly.h\"\n\n")
 
 headFile:write(prefix .. "_API const LemonUuid " .. prefix .. "_GUID;\n\n")
 headFile:write(prefix .. "_API const LemonVersion " .. prefix .. "_VERSION;\n\n")
 headFile:write("#define " .. prefix .. "_I18N_TEXT(msg)\tLemonI18nText(&" .. prefix .. "_GUID,LEMON_TEXT(msg))\n\n")
+headFile:write("#define " .. prefix .. "_ERROR_MESSAGE(error)\tLemonErrorMessage((error))\n\n")
 sourceFile:write("const LemonUuid " .. prefix .. "_GUID = " .. guid .. ";\n\n")
 sourceFile:write("const LemonVersion " .. prefix .. "_VERSION = {" .. version[0] .. "," .. version[1] .. "," .. version[2] .. "," .. version[3] .. "};\n\n")
 
