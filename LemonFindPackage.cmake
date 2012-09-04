@@ -7,7 +7,7 @@ macro(lemon_package_include)
 endmacro()
 
 macro(lemon_package_lib)
-  set(LEMON_PACKAGE_LIBS "${LEMON_PACKAGE_LIBS};${ARGN}")
+  set(LEMON_PACKAGE_LIBS "${LEMON_PACKAGE_LIBS};${ARGN}" PARENT_SCOPE)
 endmacro()
 
 function(lemon_find_package NAME)

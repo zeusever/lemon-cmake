@@ -1,4 +1,5 @@
 include(CTest)
+include(CheckCXXCompilerFlag)
 include(LemonSourceTree)
 include(LemonGlobalSetting)
 include(LemonProjectConfig)
@@ -16,6 +17,13 @@ if(MSVC)
     SET (CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}" CACHE STRING "MSVC C Release MT flags " FORCE)
     SET (CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "MSVC CXX Debug MT flags " FORCE)    
     SET (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "MSVC CXX Release MT flags " FORCE)
+else()
+    CHECK_CXX_COMPILER_FLAG(-std=c++0x LEMON_CXX_COMPILER_0X)
+
+    if(LEMON_CXX_COMPILER_0X)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")    
+    endif()
+    
 endif()
 
 function(lemon_solution NAME)
