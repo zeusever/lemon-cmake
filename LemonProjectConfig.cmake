@@ -204,8 +204,13 @@ endmacro()
 
 macro(lemon_project_link_libs)
   set(LEMON_PROJECT_LIBS "${LEMON_PROJECT_LIBS};${ARGN}" PARENT_SCOPE)
-  set(LEMON_PROJECT_LIBS "${LEMON_PROJECT_LIBS};${ARGN}")
 endmacro()
+
+macro(lemon_project_sources)
+  set(LEMON_PROJECT_SOURCES "${LEMON_PROJECT_SOURCES};${ARGN}" PARENT_SCOPE)
+endmacro()
+
+
 
 ############################################################
 #@arg FILES[out]  the addition file add to project provide by 

@@ -1,4 +1,6 @@
 lemon_package_include(iconv.h)
 
-#lemon_package_lib(iconv)
+if(APPLE)
+	lemon_project_link_libs(iconv)
+endif(APPLE)
 
