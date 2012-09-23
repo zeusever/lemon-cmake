@@ -3,6 +3,7 @@ include(CheckCXXCompilerFlag)
 include(LemonSourceTree)
 include(LemonGlobalSetting)
 include(LemonProjectConfig)
+include(LemonFindPackage)
 
 enable_language(ASM)
 
