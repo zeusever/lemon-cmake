@@ -53,7 +53,7 @@ function(lemon_find_package NAME)
       
       find_path(
         PACKAGE_${NAME}_INCLUDE_DIR
-        NAMES LEMON_PACKAGE_CHECK_FILES
+        NAMES ${LEMON_PACKAGE_CHECK_FILES}
         PATHS ${LEMON_PACKAGE_SEARCH_PATH}/include/
         NO_DEFAULT_PATH
         NO_CMAKE_ENVIRONMENT_PATH
@@ -63,11 +63,13 @@ function(lemon_find_package NAME)
 
     else(LEMON_PACKAGE_SEARCH_PATH)
 
-       find_path(
+      find_path(
         PACKAGE_${NAME}_INCLUDE_DIR
-        NAMES LEMON_PACKAGE_CHECK_FILES)
+        NAMES ${LEMON_PACKAGE_CHECK_FILES})
 
     endif(LEMON_PACKAGE_SEARCH_PATH)
+
+    lemon_message("test.... ${PACKAGE_${NAME}_INCLUDE_DIR}")
 
     if(LEMON_PACKAGE_REQUIRED AND NOT PACKAGE_${NAME}_INCLUDE_DIR)
       lemon_error("not found package ${NAME} header files: ${LEMON_PACKAGE_CHECK_FILES}")

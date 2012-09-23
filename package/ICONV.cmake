@@ -1,6 +1,6 @@
-lemon_package_include(iconv.h)
+lemon_package_check_files(iconv.h)
 
 if(APPLE)
-	lemon_project_link_libs(iconv)
+	lemon_package_check_libraries(iconv)
 endif(APPLE)
 
