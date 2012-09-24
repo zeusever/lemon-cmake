@@ -196,18 +196,22 @@ endfunction()
 
 macro(lemon_project_include)
   set(LEMON_PROJECT_INCLUDES "${LEMON_PROJECT_INCLUDES};${ARGN}" PARENT_SCOPE)
+  set(LEMON_PROJECT_INCLUDES "${LEMON_PROJECT_INCLUDES};${ARGN}")
 endmacro()
 
 macro(lemon_project_link_dirs)
   set(LEMON_PROJECT_LIB_DIRS "${LEMON_PROJECT_LIB_DIRS};${ARGN}" PARENT_SCOPE)
+  set(LEMON_PROJECT_LIB_DIRS "${LEMON_PROJECT_LIB_DIRS};${ARGN}")
 endmacro()
 
 macro(lemon_project_link_libs)
   set(LEMON_PROJECT_LIBS "${LEMON_PROJECT_LIBS};${ARGN}" PARENT_SCOPE)
+  set(LEMON_PROJECT_LIBS "${LEMON_PROJECT_LIBS};${ARGN}")
 endmacro()
 
 macro(lemon_project_sources)
   set(LEMON_PROJECT_SOURCES "${LEMON_PROJECT_SOURCES};${ARGN}" PARENT_SCOPE)
+  set(LEMON_PROJECT_SOURCES "${LEMON_PROJECT_SOURCES};${ARGN}")
 endmacro()
 
 
