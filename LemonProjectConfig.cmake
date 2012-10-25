@@ -268,7 +268,7 @@ function(lemon_project_config FILES NAME)
   file(APPEND ${PROJECT_CONFIGURE_H} "#cmakedefine ${PROJECT_PREFIX}_BUILD_AS_DLL\n\n")
   # read the standard configure.h.in
   file(STRINGS ${LEMON_CMAKE_ROOT}/configure.h.in BUFFER NEWLINE_CONSUME)
-  file(APPEND ${PROJECT_CONFIGURE_H} ${BUFFER})
+  file(APPEND ${PROJECT_CONFIGURE_H} ${BUFFER} "\n\n")
   if(EXISTS ${PROJECT_CONFIGURE_H_IN})
     lemon_debug("found local configure.h.in file :${PROJECT_CONFIGURE_H_IN}")
     file(STRINGS ${PROJECT_CONFIGURE_H_IN} BUFFER NEWLINE_CONSUME)    
