@@ -116,6 +116,10 @@ function(lemon_project NAME)
     LEMON_ONE_VALUE_KEY VERSION  RENAME
     LEMON_INPUT_ARGS ${ARGN})
 
+  if(WIN32)
+    add_definitions(/wd"4345")
+  endif()
+
   if(NOT PROJECT_VERSION)
     set(PROJECT_VERSION ${LEMON_SOLUTION_VERSION})
   endif()
